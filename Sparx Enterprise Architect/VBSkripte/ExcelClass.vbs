@@ -20,7 +20,8 @@ Class ExcelClass
 	'	- resetRow / resetCol == Zur ersten Zeile / Spalte springen
 	'	- lastRow / lastCol == Letzte befüllte Zeile / Spalte anzeigen
 	'	- gotoRow / gotoCol == Zur Zeile / Spalte springen
-	'	- write(VALUE) == VALUE in aktuelle Zelle schreiben
+	'	- value(VALUE) == VALUE in aktuelle Zelle schreiben/lesen
+	'   - valueFormula(FORMEL) == FORMEL in aktuelle Zelle schreiben
 	
 	'Public FORMAT Functions
 	'   - wrapTextAtColumn == Text in SPALTE wird umgebrochen
@@ -30,6 +31,8 @@ Class ExcelClass
 	
 	'Public Functions
 	'	- show == Excel-Arbeitsmappe anzeigen
+	'   - open == Excel-Arbeitsmappe öffnen
+	'   - newFile == Excel-Arbeitsmappe erstellen
 	
 	dim objExcelApp, excelRow, excelCol
 	dim maxRow, maxCol	
@@ -40,10 +43,6 @@ Class ExcelClass
 		maxRow = 0
 		maxCol = 0
 		set objExcelApp = CreateObject("Excel.Application")
-		
-		objExcelApp.Workbooks.Add
-		objExcelApp.ActiveWorkbook.Sheets(2).Delete
-		objExcelApp.ActiveWorkbook.Sheets(2).Delete
 	End Sub
 	
 	Public Property Let currentSheetName(name)
@@ -121,13 +120,17 @@ Class ExcelClass
 		excelCol = c
 	End Property
 	
-	Public Property Get write(cellValue)
+	Public Property Get value
+		value = objExcelApp.Cells(excelRow,excelCol).Value
+	End Property
+	
+	Public Property Let value(cellValue)
 		objExcelApp.Cells(excelRow,excelCol).Value = cellValue
 		if excelRow > maxRow then maxRow = excelRow
 		if excelCol > maxCol then maxCol = excelCol
 	End Property
 	
-	Public Property Get writeFormula(cellValue)
+	Public Property Let valueFormula(cellValue)
 		objExcelApp.Cells(excelRow,excelCol).FormulaR1C1 = cellValue
 		if excelRow > maxRow then maxRow = excelRow
 		if excelCol > maxCol then maxCol = excelCol
@@ -139,6 +142,16 @@ Class ExcelClass
 	
 	Public Property Get show()
 		objExcelApp.Visible = True
+	End Property
+	
+	Public Property Get newFile
+		objExcelApp.Workbooks.Add
+		objExcelApp.ActiveWorkbook.Sheets(2).Delete
+		objExcelApp.ActiveWorkbook.Sheets(2).Delete
+	End Property
+	
+	Public Property Get open(filePath)
+		objExcelApp.Workbooks.Open(filePath)
 	End Property
 	
 	Public Sub setGermanCharSetAtSheet()
@@ -202,6 +215,6 @@ Class ExcelClass
 	End Sub
 	
 	Private Sub Class_Terminate()
-	
+		
 	End Sub
 End Class
